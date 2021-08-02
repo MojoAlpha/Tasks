@@ -14,53 +14,56 @@ using namespace std;
 #define pb push_back
 #define fastIO                        \
     ios_base::sync_with_stdio(false); \
-    cin.tie(NULL);
+    cin.tie(NULL);                    \
+    cout.precision(12);
 
 typedef long long ll;
 typedef pair<long, long> pll;
 typedef pair<ll, ll> plll;
+typedef vector<int> vi;
 typedef vector<long> vl;
 typedef vector<ll> vll;
 typedef vector<bool> vb;
-typedef set<long>::iterator sit;
-typedef map<long, long>::iterator mit;
-typedef vector<long>::iterator vit;
+typedef vector<vb> vvb;
+typedef vector<vl> vvl;
+typedef vector<vll> vvll;
 
 const double PI = 3.141592653589793238;
 const ll oo = 1e18;
 
-ll n;
-ll a[500];
-ll pre[500];
-ll dp[500][500];
+ll dp[N];
+ll n, k, a[105];
 
-ll solution(ll l, ll r)
+ll solution(ll k)
 {
-    if (l >= r)
-        return 0;
+    if (dp[k] != -1)
+        return dp[k];
+    if (k == 0)
+        return dp[k] = 0;
 
-    if (dp[l][r] != -1)
-        return dp[l][r];
-
-    ll res = oo;
-    for (ll i = l; i < r; ++i)
+    ll ans = 0;
+    for (long i = 1; i <= n; ++i)
     {
-        ll left = solution(l, i), right = solution(i + 1, r);
-        ll tmp = left + right + pre[i] - pre[l - 1] + pre[r] - pre[i];
-        res = min(res, tmp);
+        if (a[i] > k)
+            continue;
+        if (solution(k - a[i]) == 0)
+        {
+            ans = 1;
+            break;
+        }
     }
-    return dp[l][r] = res;
+    return dp[k] = ans;
 }
 
 signed main()
 {
     fastIO;
     mem(dp, -1);
-    mem(pre, 0);
-    cin >> n;
-    fo(i, 1, n + 1) cin >> a[i];
-    fo(i, 1, n + 1) pre[i] = pre[i - 1] + a[i];
-
-    cout << solution(1, n);
+    cin >> n >> k;
+    fo(i, 0, n) cin >> a[i + 1];
+    if (solution(k))
+        cout << "First\n";
+    else
+        cout << "Second\n";
     return 0;
 }

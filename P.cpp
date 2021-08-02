@@ -14,53 +14,58 @@ using namespace std;
 #define pb push_back
 #define fastIO                        \
     ios_base::sync_with_stdio(false); \
-    cin.tie(NULL);
+    cin.tie(NULL);                    \
+    cout.precision(12);
 
 typedef long long ll;
 typedef pair<long, long> pll;
 typedef pair<ll, ll> plll;
+typedef vector<int> vi;
 typedef vector<long> vl;
 typedef vector<ll> vll;
 typedef vector<bool> vb;
-typedef set<long>::iterator sit;
-typedef map<long, long>::iterator mit;
-typedef vector<long>::iterator vit;
+typedef vector<vb> vvb;
+typedef vector<vl> vvl;
+typedef vector<vll> vvll;
 
 const double PI = 3.141592653589793238;
 const ll oo = 1e18;
 
-ll n;
-ll a[500];
-ll pre[500];
-ll dp[500][500];
+vi gr[N];
+ll n, a, b, dp[N][2];
 
-ll solution(ll l, ll r)
+ll solve(int v, int c, int p)
 {
-    if (l >= r)
-        return 0;
+    if (dp[v][c] != -1)
+        return dp[v][c];
 
-    if (dp[l][r] != -1)
-        return dp[l][r];
-
-    ll res = oo;
-    for (ll i = l; i < r; ++i)
+    ll tot = 1;
+    for (auto u : gr[v])
     {
-        ll left = solution(l, i), right = solution(i + 1, r);
-        ll tmp = left + right + pre[i] - pre[l - 1] + pre[r] - pre[i];
-        res = min(res, tmp);
+        if (u == p)
+            continue;
+        if (c == 0)
+            tot = (tot * (solve(u, 0, v) + solve(u, 1, v) % MOD) % MOD) % MOD;
+        else
+            tot = (tot * solve(u, 0, v)) % MOD;
     }
-    return dp[l][r] = res;
+    return dp[v][c] = tot;
 }
 
 signed main()
 {
     fastIO;
     mem(dp, -1);
-    mem(pre, 0);
-    cin >> n;
-    fo(i, 1, n + 1) cin >> a[i];
-    fo(i, 1, n + 1) pre[i] = pre[i - 1] + a[i];
 
-    cout << solution(1, n);
+    cin >> n;
+    fo(i, 0, n - 1)
+    {
+        cin >> a >> b;
+        gr[a].pb(b);
+        gr[b].pb(a);
+    }
+
+    cout << (solve(1, 0, -1) + solve(1, 1, -1)) % MOD;
+
     return 0;
 }
